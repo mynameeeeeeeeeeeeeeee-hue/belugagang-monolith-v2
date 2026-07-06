@@ -23,16 +23,18 @@ Le **BeluGANG Monolith** regroupe **4 bots Discord** dans un seul service pour �
 3. Connecte ton repo GitHub `belugagang-monolith-v2`
 
 ### 2. Ajouter les Variables d'Environnement
-Render utilisera automatiquement le fichier `render.yaml` pour configurer le service. Tu devras remplir les valeurs secrètes dans le dashboard Render :
+Render utilisera automatiquement le fichier `render.yaml` pour configurer le service. Tu **DOIS** remplir les valeurs secrètes dans le dashboard Render (onglet **Environment**) pour que les bots puissent se connecter :
 
 ```
-ZEEPIN_TOKEN=<TOKEN_ZEEPIN>
-EVENTS_TOKEN=<TOKEN_EVENTS>
-HONEYPOT_TOKEN=<TOKEN_HONEYPOT>
-CARLBOT_TOKEN=<TOKEN_CARLBOT>
-BOT_OWNER_ID=<TON_ID_DISCORD>
-BOT_CREATOR_ID=<TON_ID_DISCORD>
+ZEEPIN_TOKEN=...
+EVENTS_TOKEN=...
+HONEYPOT_TOKEN=...
+CARLBOT_TOKEN=...
+BOT_OWNER_ID=...
+BOT_CREATOR_ID=...
 ```
+
+> 💡 **Note** : Si aucune variable n'est configurée, le Monolithe restera en attente sans crasher pour te laisser le temps de les ajouter. Une fois ajoutées, Render redémarre automatiquement le service.
 
 > ⚠️ **Les tokens ne doivent jamais être committés dans le repo.**
 

@@ -2,7 +2,7 @@ services:
   - type: worker
     name: belugagang-monolith-v2
     env: node
-    buildCommand: npm install && cd bots/zeepin && npm install && cd ../belugagang-events && npm install && cd ../honeypot && npm install && cd ../carlbot && npm install
+    buildCommand: npm install && for d in bots/*; do [ -d "$d" ] && (cd "$d" && npm install); done
     startCommand: node index.js
     envVars:
       - key: ZEEPIN_TOKEN
@@ -27,3 +27,5 @@ services:
         sync: false
       - key: NODE_VERSION
         value: 20
+      - key: PORT
+        value: 10000

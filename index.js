@@ -2,6 +2,7 @@
 // BeluGANG Monolith — 4 Discord Bots in 1
 // Zeepin | BeluGANG Events | Honeypot | CarlBot
 // ============================================================
+require('dotenv').config();
 const { fork } = require('child_process');
 const path = require('path');
 
@@ -82,6 +83,13 @@ const processes = bots.map(bot => launchBot(bot)).filter(Boolean);
 
 console.log(`[Monolith] ✅ ${processes.length}/${bots.length} bots lancés.`);
 console.log('─'.repeat(60));
+
+// Garder le processus en vie même si aucun bot n'est lancé (pour éviter le crash immédiat sur Render)
+if (processes.length === 0) {
+  console.log('[Monolith] ⚠️ Aucun bot n\'a pu être lancé. Vérifiez vos variables d\'environnement.');
+  console.log('[Monolith] 🕒 Le processus reste actif pour permettre l\'accès aux logs et au dashboard.');
+  setInterval(() => {}, 1000);
+}
 
 // Arrêt propre
 process.on('SIGTERM', () => {
