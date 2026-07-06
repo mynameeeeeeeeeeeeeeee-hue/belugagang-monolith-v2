@@ -85,14 +85,21 @@ const processes = bots.map(bot => launchBot(bot)).filter(Boolean);
 console.log(`[Monolith] ✅ ${processes.length}/${bots.length} bots lancés.`);
 console.log('─'.repeat(60));
 
-// Health Check HTTP (pour éviter les échecs de déploiement sur Render si configuré en Web Service)
+// Health Check HTTP + Auto-Ping pour éviter la mise en veille sur Render
 const PORT = process.env.PORT || 10000;
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('BeluGANG Monolith is running\n');
-}).listen(PORT, '0.0.0.0', () => {
+  res.end('BeluGANG Monolith is Live\n');
+});
+
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`[Monolith] 🌐 Health check actif sur le port ${PORT}`);
 });
+
+// Auto-ping interne toutes les 5 minutes pour garder Render éveillé
+setInterval(() => {
+  http.get(`http://0.0.0.0:${PORT}/`, (res) => {}).on('error', () => {});
+}, 300000);
 
 // Garder le processus en vie même si aucun bot n'est lancé (pour éviter le crash immédiat sur Render)
 if (processes.length === 0) {
