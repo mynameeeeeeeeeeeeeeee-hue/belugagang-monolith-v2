@@ -5,6 +5,7 @@
 require('dotenv').config();
 const { fork } = require('child_process');
 const path = require('path');
+const http = require('http');
 
 const bots = [
   {
@@ -83,6 +84,15 @@ const processes = bots.map(bot => launchBot(bot)).filter(Boolean);
 
 console.log(`[Monolith] ✅ ${processes.length}/${bots.length} bots lancés.`);
 console.log('─'.repeat(60));
+
+// Health Check HTTP (pour éviter les échecs de déploiement sur Render si configuré en Web Service)
+const PORT = process.env.PORT || 10000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('BeluGANG Monolith is running\n');
+}).listen(PORT, '0.0.0.0', () => {
+  console.log(`[Monolith] 🌐 Health check actif sur le port ${PORT}`);
+});
 
 // Garder le processus en vie même si aucun bot n'est lancé (pour éviter le crash immédiat sur Render)
 if (processes.length === 0) {

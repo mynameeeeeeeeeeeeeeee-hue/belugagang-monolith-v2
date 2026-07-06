@@ -1,6 +1,7 @@
 services:
-  - type: worker
+  - type: web
     name: belugagang-monolith-v2
+    plan: free
     env: node
     buildCommand: npm install && for d in bots/*; do [ -d "$d" ] && (cd "$d" && npm install); done
     startCommand: node index.js
