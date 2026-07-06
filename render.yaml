@@ -1,0 +1,29 @@
+services:
+  - type: worker
+    name: belugagang-monolith-v2
+    env: node
+    buildCommand: npm install && cd bots/zeepin && npm install && cd ../belugagang-events && npm install && cd ../honeypot && npm install && cd ../carlbot && npm install
+    startCommand: node index.js
+    envVars:
+      - key: ZEEPIN_TOKEN
+        sync: false
+      - key: ZEEPIN_CLIENT_ID
+        value: 1523413598024761374
+      - key: EVENTS_TOKEN
+        sync: false
+      - key: EVENTS_CLIENT_ID
+        value: 1523414380438491157
+      - key: HONEYPOT_TOKEN
+        sync: false
+      - key: HONEYPOT_CLIENT_ID
+        value: 1523436409937985576
+      - key: CARLBOT_TOKEN
+        sync: false
+      - key: CARLBOT_CLIENT_ID
+        value: 1523443499666640986
+      - key: BOT_OWNER_ID
+        sync: false
+      - key: BOT_CREATOR_ID
+        sync: false
+      - key: NODE_VERSION
+        value: 20
