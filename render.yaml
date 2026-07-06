@@ -1,5 +1,5 @@
 services:
-  - type: web
+  - type: worker
     name: belugagang-monolith-v2
     plan: free
     env: node
