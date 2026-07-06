@@ -1,0 +1,16 @@
+{
+  "name": "honeypot-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord Honeypot — Injection H24 du code des bots BeluGANG Events",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

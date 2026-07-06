@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+dist/
+.DS_Store
+bots/*/node_modules/
+dashboard/node_modules/
+dashboard/dist/
+backend/node_modules/
