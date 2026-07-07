@@ -25,6 +25,8 @@ const warns = new Map(); // userId -> [{ reason, date, modId }]
 const reactionRoles = new Map(); // messageId -> { emoji -> roleId }
 const automodConfig = new Map(); // guildId -> config
 const modLogs = new Map(); // guildId -> channelId
+const welcomeChannels = new Map(); // guildId -> channelId
+const goodbyeChannels = new Map(); // guildId -> channelId
 
 const commands = [
   // Modération
@@ -64,6 +66,10 @@ const commands = [
     .addStringOption(o => o.setName('pseudo').setDescription('Nouveau pseudo').setRequired(true)),
   new SlashCommandBuilder().setName('modlogs').setDescription('Voir les logs de modération d\'un membre')
     .addUserOption(o => o.setName('membre').setDescription('Membre').setRequired(true)),
+  new SlashCommandBuilder().setName('setwelcome').setDescription('Définit le salon de bienvenue')
+    .addChannelOption(o => o.setName('salon').setDescription('Salon de bienvenue').setRequired(true)),
+  new SlashCommandBuilder().setName('setgoodbye').setDescription('Définit le salon d\'au revoir')
+    .addChannelOption(o => o.setName('salon').setDescription('Salon d\'au revoir').setRequired(true)),
 ].map(c => c.toJSON());
 
 // ─── Fonction log de modération ───────────────────────────────────────────────
@@ -99,6 +105,40 @@ client.once('ready', async () => {
       console.error('[CarlBot] Erreur slash commands:', e.message);
     }
   }
+});
+
+// ─── Welcome & Goodbye ─────────────────────────────────────────────────────────
+client.on('guildMemberAdd', async member => {
+  const channelId = welcomeChannels.get(member.guild.id) || modLogs.get(member.guild.id);
+  if (!channelId) return;
+  const channel = member.guild.channels.cache.get(channelId);
+  if (!channel) return;
+
+  const embed = new EmbedBuilder()
+    .setTitle('👋 Bienvenue !')
+    .setDescription(`Bienvenue sur le serveur, ${member} ! On est ravis de t'avoir parmi nous. ✨`)
+    .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+    .addFields({ name: '👤 Membre', value: `${member.user.tag}`, inline: true }, { name: '📊 Total', value: `${member.guild.memberCount}`, inline: true })
+    .setColor(0x00FF00)
+    .setTimestamp();
+  
+  await channel.send({ content: `Bienvenue ${member} !`, embeds: [embed] }).catch(() => {});
+});
+
+client.on('guildMemberRemove', async member => {
+  const channelId = goodbyeChannels.get(member.guild.id) || modLogs.get(member.guild.id);
+  if (!channelId) return;
+  const channel = member.guild.channels.cache.get(channelId);
+  if (!channel) return;
+
+  const embed = new EmbedBuilder()
+    .setTitle('😢 Au revoir...')
+    .setDescription(`${member.user.tag} vient de nous quitter. Bonne continuation !`)
+    .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+    .setColor(0xFF0000)
+    .setTimestamp();
+  
+  await channel.send({ embeds: [embed] }).catch(() => {});
 });
 
 // ─── Auto-mod ─────────────────────────────────────────────────────────────────
@@ -282,6 +322,24 @@ client.on('interactionCreate', async interaction => {
     const action = interaction.options.getString('action');
     automodConfig.set(interaction.guild.id, { enabled: action === 'enable' });
     await interaction.reply({ content: `✅ Auto-modération **${action === 'enable' ? 'activée' : 'désactivée'}**.` });
+  }
+
+  else if (commandName === 'setwelcome') {
+    if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+      return interaction.reply({ content: '❌ Administrateur requis.', ephemeral: true });
+    }
+    const salon = interaction.options.getChannel('salon');
+    welcomeChannels.set(interaction.guild.id, salon.id);
+    await interaction.reply({ content: `✅ Salon de bienvenue défini : ${salon}` });
+  }
+
+  else if (commandName === 'setgoodbye') {
+    if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+      return interaction.reply({ content: '❌ Administrateur requis.', ephemeral: true });
+    }
+    const salon = interaction.options.getChannel('salon');
+    goodbyeChannels.set(interaction.guild.id, salon.id);
+    await interaction.reply({ content: `✅ Salon d'au revoir défini : ${salon}` });
   }
 
   else if (commandName === 'role') {
